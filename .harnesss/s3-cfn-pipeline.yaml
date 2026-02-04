@@ -1,0 +1,42 @@
+pipeline:
+  name: s3-cfn-deployment
+  identifier: s3_cfn_deployment
+  projectIdentifier: YOUR_PROJECT_ID
+  orgIdentifier: YOUR_ORG_ID
+  tags: {}
+
+  stages:
+    - stage:
+        name: Deploy_S3
+        identifier: Deploy_S3
+        type: Deployment
+        spec:
+          deploymentType: Custom
+          execution:
+            steps:
+              - step:
+                  type: CloudFormationCreateUpdateStack
+                  name: Create_or_Update_S3
+                  identifier: Create_or_Update_S3
+                  spec:
+                    connectorRef: aws_connector
+                    region: ap-south-1
+                    stackName: s3-bucket-stack
+                    templateFile:
+                      store:
+                        type: Github
+                        spec:
+                          connectorRef: github_connector
+                          repoName: YOUR_GITHUB_REPO
+                          gitFetchType: Branch
+                          branch: main
+                          paths:
+                            - cfn/s3-bucket.yaml
+                    parameters:
+                      - parameterKey: BucketName
+                        parameterValue: my-harness-s3-bucket-123
+                      - parameterKey: Environment
+                        parameterValue: dev
+                    capabilities: CAPABILITY_NAMED_IAM
+                    roleArn: ""
+                    timeoutInMinutes: 10

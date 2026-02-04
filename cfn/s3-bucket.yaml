@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Create an S3 bucket using CloudFormation
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CreatedBy
+          Value: Harness
+
+Outputs:
+  BucketName:
+    Description: Created S3 bucket name
+    Value: !Ref S3Bucket
